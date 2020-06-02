@@ -1,0 +1,30 @@
+# We want to analyze should we need to renew the contract with the existing vendor or not
+View(ContractRenewal_Data_unstacked_)
+attach(ContractRenewal_Data_unstacked_)
+# Ho : supplier A is normally distributed H1 : supplier A is not normally distributed 
+shapiro.test(`Supplier A`)
+# p-value = 0.8962 > 0.05 accept null hypothesis
+# Ho : supplier B is normally distributed H1 : supplier B is not normally distributed 
+shapiro.test(`Supplier B`)
+# p-value = 0.6484 > 0.05 accept null hypothesis
+# Ho : supplier c is normally distributed H1 : supplier C is not normally distributed 
+shapiro.test(`Supplier C`)
+# p-value = 0.5719 > 0.05 accept null hypothesis
+# Normally we can perform variance test when we are having only 2 population but in this situation iam having more than 2 populations so use  bartlett test
+# converting 4 columns data into 2 columns
+Stacked_Data <- stack(ContractRenewal_Data_unstacked_)
+View(Stacked_Data)
+# Ho : variance are equal for my suppliers H1 : variance are not equal for my suppliers
+bartlett.test(values~ind, data=Stacked_Data) # To check variances are similar or not 
+# p-value = 0.7231 > 0.05 accept null hypothesis
+# variance are equal to my suppliers so now iam going to perform ANOVA test.
+# use 1 way anova test time is the only measuring factor.
+# use 2 way anova test for productivity measuring factor.
+# use 3 way anova test for profit measuring factor.
+# use 4 way anova test for sales measuring factor.
+# Ho : they have equal means H1 : they have un equal means
+Anova_results <- aov(values~ind,data = Stacked_Data)
+summary(Anova_results)
+# p-value = 0.104 > 0.05 accept null hypothesis
+# mean of supplier A = mean of supplier B = mean of supplier C
+# Renew the contract with Suppliers A,B & C 
