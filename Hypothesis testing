@@ -1,0 +1,19 @@
+#My aim in this script is weather my startegy 1 (interest wave strategy) is effective or not with respect of strategy 2 (StandardPromotion) by using 2 sample T test 
+View(Promotion)
+# i am going to change my column names 
+colnames(Promotion)<-c("Credit","Promotion.Type","InterestRateWaiver","StandardPromotion")
+View(Promotion) # to verify my column names are changed or not
+attach(Promotion)
+# for normality test, null hypo(H0) is : Normally distributed, alternative hypo (H1)is : Not normally distributed
+shapiro.test(InterestRateWaiver)
+# p-value = 0.2246 >0.05 so p high null fly => It follows normal distribution
+shapiro.test(StandardPromotion)
+# p-value = 0.1916 >0.05 so p high null fly => It follows normal distribution
+# so both strategy are normally distributed 
+# because my external conditions are not same as per flow chart should do Variance test
+# for any statistics test it should have both null and alternative hypo here H0 : Variance is equal, H1 : Variance is unequal 
+var.test(InterestRateWaiver,StandardPromotion)
+# p-value = 0.653 > 0.05 so p high null fly => Equal variances
+# because of equal variances,as per flow chart should do 2 sample T test
+# H0 : mean of strategy 1 = mean of strategy 2, H1 : means are not equal.
+# 2 sample T Test
