@@ -1,0 +1,7 @@
+attach(Bahaman)
+# To see number of defectives with respect to every country 
+table(Country,Defective)
+# H0 All proportions are equal H1 proportions are not equal ( given in the problem)
+chisq.test(Country,Defective)
+# p-value = 0.6315 >0.05 so p high null fly.
+# H0 All proportions are equal
