@@ -1,0 +1,8 @@
+attach(wc.at)
+# scatter plot by using both dependent (AT) and independent variables (Waist)
+plot(Waist,AT)
+
+# To add color to Scatter plot use below function   
+plot(wc.at$Waist,wc.at$AT,main="Scatter Plot", col="Dodgerblue4", 
+     col.main="Dodgerblue4", col.lab="green", xlab="Waist Ciscumference", 
+     ylab="Adipose Tissue area", pch=20)  # plot(x,y)
