@@ -1,0 +1,20 @@
+install.packages("psych")
+library(psych)
+View(Cars)
+attach(Cars)
+# now ro draw consolidated scatter plots 
+pairs(Cars)
+# If you observe my VOL and WT graphs it shows strongly co relate each other which will leads to multicollinearity 
+
+cor(HP,MPG)
+cor(VOL,WT)
+# instead of checking each item wise use pairs.panel for consolidated values
+# to use pairs.panel should install psych package
+pairs.panels(Cars)
+# if you observe co relation value between VOL and WT  is "1.00" which means undesirable property, because presence of multicollinearity
+
+# or we can find the all possible correlation by applying correlation function to entire data set.
+
+cor(Cars)
+
+# values displying by pairs.panels(Cars) & cor(Cars) are same but for better visualtion and better understanding use pairs.panels(Cars)
