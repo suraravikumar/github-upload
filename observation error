@@ -1,0 +1,18 @@
+# my aim in this script is to check any perticular observation is causing more effect (like considering wrong value will influence more)
+install.packages("car")
+library(car)
+plot(model.car)
+
+infIndexPlot(model.car)
+# or 
+influencePlot(model.car)
+
+# we understood that 77th observation is causing more effect to my model 
+# so i have identifed that 77th observation is causing more it should be removed
+# just enter the position in the data with - (minus) symbol to remove that observation 
+# Note entire 77th row will be removed from the data set
+
+model.car1 <- lm(MPG~VOL,data = Cars1 [-77,])
+summary(model.car1)
+
+# Note : iam building model.car1 in Multiple Linear Regression Cars script.
