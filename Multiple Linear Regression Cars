@@ -1,0 +1,96 @@
+install.packages("psych")
+library(psych)
+View(Cars1)
+attach(Cars1)
+# To check normality use qqnorm
+qqnorm(HP)
+qqline(HP)
+summary(Cars1)
+hist(HP)
+# it will help u identify the relation between HP and MPG 
+plot(HP,MPG)
+# with the above i can conclude as my Horse power (HP) increases my miles per gallon (MPG) decrease
+# which means they are negatively co relate each other.
+
+# to identify the relation between VOL and MPG 
+plot(VOL,MPG)
+# We can say negatively co related 
+
+# now ro draw consolidated scatter plots 
+pairs(Cars)
+# If you observe my VOL and WT graphs it shows strongly co relate each other which will leads to multicollinearity 
+
+cor(HP,MPG)
+cor(VOL,WT)
+# instead of checking each item wise use pairs.panel for consolidated values
+# to use pairs.panel should install psych package
+pairs.panels(Cars1)
+# if you observe co relation value between VOL and WT  is "1.00" which means undesirable property, because presence of multicollinearity
+
+# or we can find the all possible correlation by applying correlation function to entire data set.
+
+cor(Cars1)
+
+# Now iam going to build my model
+# by using LM function on dependent variable with independent variables 
+model.car <- lm(MPG~VOL+HP+SP+WT)
+summary(model.car)
+# If u observe the Coefficients having * in last means significant no * means not significant
+# When ever you bring any additional independent variable my R^2 will go up weather it could be significant or not significant
+# Look at Adjusted R-squared value it will only go up when significant values are adding and if insignificant values are coming into picture it will not go up.
+
+# now check individually check the values instead of checking for entire data set 
+
+model.carV <- lm(MPG~VOL)
+summary(model.carV)
+
+# See R^2  values are gone down. because we removed all the variables but this is not the desired out put
+# we understood that VOL is significant because it is having 3* in the last so i should consider VOL 
+
+model.carw <- lm(MPG~WT)
+summary(model.carw)
+# we understood that WT is also significant for my final equation.because it is having 3* in the end
+
+model.carvw <- lm(MPG~WT+VOL)
+summary(model.carvw)
+# no stars because presence of multicollinearity, because VOL and WT are similar to each other 
+# so now we should decide which variable should be consider by conducting VIF 
+
+# to see which values are causing more effect to my equation, because for collecting this data we must have invested more 
+# so instead of leaving entire value data check any specific values are causing more effect or not by installing below package
+# it will show you the position of value causing more effect 
+
+install.packages("car")
+library(car)
+plot(model.car)
+
+infIndexPlot(model.car)
+# or 
+influencePlot(model.car)
+
+# we understood that 77th observation is causing more effect to my model 
+# so to remove the 77th observation 
+# Note entire 77th row will be removed from the data set
+model.car1 <- lm(MPG~VOL+HP+SP+WT,data = Cars1 [-77,])
+summary(model.car1)
+
+# which ever variable is having highest Variance Inflation Factors (VIF) value we should remove that
+vif(model.car)
+# VOL = 638.80608, WT = 639.53382 so iam going to remove WT
+
+model.final <- lm(MPG~VOL+HP+SP,data = Cars1 [-77,])
+summary(model.final)
+
+# Instead of using VIF we can do it in another way i.e 	Through Akaike information criteria (AIC)
+# to perform this AIC should install below package
+
+install.packages("MASS")
+library(MASS)
+
+stepAIC(model.car)
+
+# should consider lower AIC model value 
+# or by default it will remove the variable 1st test MPG ~ VOL + HP + SP + WT with AIC =248.06and 2nd MPG ~ VOL + HP + SP with AIC = 246.12
+# If you observe in the set 2 AIC has removed the WT and showing lower value 
+# with his we can confirm that WT can be removed after the double check with both VIC & AIC 
+# so i can confirm my final model is {model.final <- lm(MPG~VOL+HP+SP,data = Cars1 [-77,])}
