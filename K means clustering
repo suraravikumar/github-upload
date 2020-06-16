@@ -1,0 +1,101 @@
+# Always approach your client how many clusters you are expecting or
+# approach concern domain expert for finalizing number of clusters we should create 
+# K=√(n/2) "Refer page number 39 in my material"
+# R has package by using "kselection" to find out number clusters you should create
+
+install.packages("plyr")
+library(plyr)
+
+# as we don't have data for testing we should create random data by using below function 
+x <- runif(50)
+x
+y <- runif(50)
+y
+
+# random variables will be in the range of 0 to 1.
+
+# Now iam going to combine two columns by using below function
+data <- cbind(x,y)
+data
+
+# now i should plot my data 
+# n stands for no plotting in this function 
+plot(data,type = 'n')
+# I want to add some text, i want my x and y values label with row names
+text(data,row.names(data))
+# Case 1 till now iam creating data from now onward iam going to perform clustering function
+# upfront i got K=4 from my manager or client 
+km <- kmeans(data,4)
+
+#to structure my data 
+str(km)
+
+#view individual values by selecting desired value 
+km$cluster
+km$centers
+# To visualize the cluster 
+install.packages("animation")
+library(animation)
+# by using the above animation package we can see the clusters 
+km <- kmeans.ani(data,4)
+
+# if you observe previous my manager/client has given K=4, instead of asking them we will ask R to help us deciding Kvalue or number of clusters
+# Instead of believing K=4 still we can optimize refer the case=3
+install.packages("kselection")
+library(kselection)
+# now we are going to use builtin data set i.e iris(it is a dataset of flowers)
+#  Case 2 instead of creating some random data set use default R language data set 
+iris
+data("iris")
+View(iris)
+k <- kselection(iris[,-5], parallel = TRUE)
+k
+# my R language is telling that K=2 which means it is telling that 2 clusters is required 
+# till now case 2 finished 
+
+# case 3 
+input <- read.csv("universities_Clustering.csv")
+# I don't required all columns data and want only specified columns of data 
+mydata <- input[1:25,c(2:7)]
+normalize_data <- scale(mydata[,1:6])
+View(normalize_data)
+# now iam going to fit 3 clusters K=3
+fit <- kmeans(normalize_data,3)
+str(fit)
+# betweenss   : num 101 always this betweenss should be high
+# tot.withinss: num 42.9 always tital withinss should be less
+fit1 <- kmeans(normalize_data,5)
+str(fit1)
+# betweenss   : num 119 
+# tot.withinss: num 25.4
+# to identify at which point my i can stop use the below script instead of chacking individua values
+
+wss = (nrow(normalize_data)-1)*sum (apply(normalize_data, 2, var))
+wss
+# Determine number of clusters by scree-plot 
+for (i in 1:8) wss[i] = sum(kmeans(normalize_data, centers=i)$withinss)
+plot(1:8, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")   # Look for an "elbow" in the scree plot #
+title(sub = "K-Means Clustering Scree-Plot")
+# by this i understood that K= 7 
+fit2 <- kmeans(normalize_data,7)
+str(fit2)
+# Now iam adding my clusters to my data set (membership)
+final<- data.frame(input, fit$cluster) # append cluster membership
+View(final)
+# now i want last column should come front 
+final1 <- final[,c(ncol(final),1:(ncol(final)-1))]
+View(final1)
+# Aggregate my data 1;6 which means give me my data from column 1 to 6, group them by my cluster lables by creating new list with a mean
+
+aggregate(mydata[,1:6], by=list(fit$cluster), FUN=mean)
+
+# for using larger applications we should use clara 
+# to perform this clara we should install the below package 
+install.packages("cluster")
+library(cluster)
+# now if i want to create large number of dummy variables 
+xds <- rbind(cbind(rnorm(5000, 0, 8), rnorm(5000, 0, 8)), cbind(rnorm(5000, 50, 8), rnorm(5000, 50, 8)))
+xds
+# out of that i want only 100 samples with 2 clusters 
+xcl <- clara(xds, 2, sample = 100)
+clusplot(xcl)
