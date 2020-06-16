@@ -1,3 +1,4 @@
+# Creating cluster by using dendrogram
 # instead of normal importing procedure use this function to directly import file into R
 input <- read.csv("Universities_Clustering.csv")
 View(input)
