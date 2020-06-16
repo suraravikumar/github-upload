@@ -1,0 +1,42 @@
+# instead of normal importing procedure use this function to directly import file into R
+input <- read.csv("Universities_Clustering.csv")
+View(input)
+# my first column "university name" is not going to effect my analysis so iam removing
+mydata <- input[,(2:7)]
+View(mydata)
+
+# now i have to normalize my data by using scale function 
+normalize_data <- scale(mydata)
+View(normalize_data)
+
+# now i should calculate distance by using method called Euclidean distance 
+d <- dist(normalize_data, method = "euclidean")
+# now i have fit father neighbor Hierarchical clustering or dendrogram by using function "hclust"
+fit <- hclust(d,method = "complete")
+# To view dendrogram use below function 
+plot(fit)
+# to aline all my records in a single straight line for better visualization 
+plot(fit,hang = -1)
+# now we should cut our dendrogram by using function "cutree"
+groups <- cutree(fit, k=3)
+# to visualize the clusters use the below function
+rect.hclust(fit, k=3, border = "red")
+
+# Now iam going convert groups into matrix
+membership <- as.matrix(groups)
+View(membership)
+
+# now i should combine university name with this final equation to understand which university is falling which cluster
+
+final <- data.frame(input,membership)
+View(final)
+
+# now in final data my cluster name "membership" is in the last column, this membership column should come first 
+final1 <- final[c(8,1,2,3,4,5,6,7)]
+View(final1)
+
+# now i should export the results into excel 
+write.csv(final1,file = "final.csv")
+
+# file will be saved in my working directory 
+getwd()
