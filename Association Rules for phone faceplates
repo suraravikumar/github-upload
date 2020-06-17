@@ -1,0 +1,25 @@
+# Generating rules by using Associations rule 
+# install the package
+install.packages("arules")
+# invoke the package
+library("arules") 
+# if you want to read Excel file we should install below package
+install.packages("readxl")
+library(readxl)
+# If we want to directly attach excel use below function & 
+# 1 represents my data presence in sheet1, give 2 if you want to consider data in sheet2 
+mydata <- read_xlsx(file.choose(),1)# Read xlsx file
+View(mydata)
+# we have to crate association rules by using function "apriori"
+# Collect support value and confident vales from client or manager 
+rules <-  apriori(as.matrix(mydata[,2:7]),parameter=list(support=0.2,confidence=0.7)) 
+# my above rule has created writing ... [8 rule(s)]  
+# to see rules we should use command
+inspect(rules)
+# always we should select the higest lift ratio value 
+# It is deficult me find of which is highest value so, to sort my data with respective of lift ratio 
+inspect(sort(rules, by="lift"))
+#inspect(head(sort(rules, by="lift")))
+# my out come rules are 
+# 1st rule if green then red [[1] {green} => {red}]
+# 2nd rule if white, green then red [{white,green} => {red}]
