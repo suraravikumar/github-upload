@@ -1,0 +1,39 @@
+# Used for building association rules i.e. apriori algorithm
+install.packages("arules")
+library("arules") 
+# In R language there is a default grocerie data iam going to use that dataset
+data("Groceries")
+# still if you want to now some more details about data set use this command or ignore it
+?Groceries
+# we can see top 10 groceries transaction 
+# showing only top 10 transactions
+inspect(Groceries[1:10])
+# this is "A rules visualization package"
+install.packages("arueslViz")
+library("arulesViz")
+
+# Iam going to create rules by making using apriori algorithm 
+# Keep changing support and confidence values to obtain different rules
+?apriori
+# Building rules using apriori algorithm
+arules <- apriori(Groceries, parameter = list(support=0.002,confidence=0.6))
+# it has created writing ... [376 rule(s)] 
+# sort rules based on my lift ratio values 
+inspect(head(sort(arules,by="lift"))) 
+
+# Different Ways of visualization Rules
+plot(arules)
+# I understood that my lift ratio is increasing with respective of colour so darker the colour means higher the lift ratio 
+# my support values are falling under [0.002 to 0.009]
+# Confidence values are falling under [0.6 to 0.85 or can go 0.90 having 1 observation]
+
+# Another way of visualization 
+plot(arules,method="grouped")
+
+# Another way of visualization for only first 30 rules 
+plot(arules[1:30],method = "graph")
+
+# If you want to save you rules
+write(arules, file="a_rules.csv",sep=",")
+
+#getwd()
