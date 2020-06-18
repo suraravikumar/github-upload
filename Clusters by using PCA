@@ -1,0 +1,63 @@
+# creating clusters by using PCA values. 
+#import university data set 
+mydata <- read.csv("universities_clustering.csv")
+View(mydata)
+# To perform PCA use the function called "princomp"
+# To get any help regarding princomp function use one of the function both are same
+help("princomp")
+?princomp
+# my first column is containing the name so iam not going to consider that for operation
+View(mydata[-1])
+
+# now iam going to apply the function
+# my data without first line, 
+# using corelation matrix to standardise my valuse so use Corelation is true, 
+# I want my PCA score so scores = true
+# Iam not going to use co variance matrix so covmat=null
+pcaobj <- princomp(mydata[-1], cor = TRUE, scores = TRUE, covmat = NULL)
+summary(pcaobj)
+# focus on Proportion of Variance for Comp.1 0.7686808 which means 76%, comp 2 0.1311360 means 13% comp 3 0.04776031 means 4%
+# Together my comp 1&2 is explaining 89%(76+13%) of variance 
+# so we should decide how much percent we need basd on that we should select number of comp for my analysis
+
+# i want to ckeck the weights 
+loadings(pcaobj)
+# want to show what PCA are having importance
+plot(pcaobj)
+# i can say that comp1 having highest importance (highest variance)
+# if we want to check the scores of the components
+pcaobj$scores
+# Top 3 PCA represents the whole data
+pcaobj$scores[1:3]
+# use cbind function to combine data in column wise 
+mydata <-cbind(mydata,pcaobj$scores)
+# here i have consider all comp 1 to comp 6 values 
+# for my analysis i require only comp 1,2,3 so iam removing last comp 3 values
+mydata <- mydata[1:10]
+View(mydata)
+# iam preparing my data for clustering, because they are my PCA values
+clus_data <- mydata[8:10]
+clus_data
+# now iam going to use Kmeans clustering
+# normalizing data 
+norm_clus <- scale(clus_data)
+# calculating distnce by suing euclidean method
+dist1 <- dist(norm_clus,method = "euclidean")
+# iam going to fit my hierarchical clustering by using hclust function
+# method = complete means iam usig father neighbor concept
+fit1 <- hclust(dist1,method = "complete")
+# to view dendrogram
+plot(fit1)
+# cutting dendrogram by clusters
+groups <- cutree(fit1,5)
+# divided cluster information is going to store in the form of matrix
+membership_1 <- as.matrix(groups)
+View(membership_1)
+# now iam going to combine cluster related information with my data
+final1 <- cbind(membership_1,mydata)
+View(final1)
+#i need some of information 
+View(aggregate(final1[,-c(2,9:11)],by=list(membership_1),FUN=mean))
+
+# save my file 
+write.csv(final1,file = "universities_clustered.csv")
