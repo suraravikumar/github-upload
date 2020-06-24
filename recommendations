@@ -1,0 +1,34 @@
+# to use recommendations concepts we should install below packages
+install.packages("recommenderlab", dependencies=TRUE)
+library("recommenderlab")
+install.packages("Matrix")
+library(caTools)
+# Import data
+movie_rate_data <- read.csv(file.choose())
+# to see what type data present and what type of data it is.
+str(movie_rate_data)
+View(movie_rate_data)
+# iam going to see the histograph for movie ratings
+hist(movie_rate_data$rating)
+# data type for my data set should be conerting into real ratings 
+
+movie_rate_data_matrix <- as(movie_rate_data, 'realRatingMatrix')
+
+# 1st Approach which iam using is popularity based approach by using recommender
+# this is my model 
+movie_recomm_model1 <- Recommender(movie_rate_data_matrix, method="POPULAR")
+
+# BY using my model iam predicting recommendations for 1st user, I need 4 recommendations
+recommended_items1 <- predict(movie_recomm_model1,movie_rate_data_matrix[1],n=4)
+# To see the list of recommended items
+as(recommended_items1,"list")
+# somy final out come of 4 recommendations based on popular creiteria 
+#1,Toy Story (1995),2 Heat (1995),3 Tom and Huck (1995), 4 Waiting to Exhale (1995)
+# if you want you can change n=4 from desired number of recommended values
+# this model will not consider users interest
+
+# now I am going to build model2 for user based Collaborative Filtering
+
+movie_recomm_model2 <- Recommender(movie_rate_data_matrix, method="UBCF")
+recommended_items2 <- predict(movie_recomm_model2,movie_rate_data_matrix[1],n=5)
+as(recommended_items2,"list")
