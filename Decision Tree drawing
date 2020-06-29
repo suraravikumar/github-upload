@@ -14,7 +14,7 @@ intraininglogical <- createDataPartition(iris$Species,p=.75,list =F)
 # As iam created my 75% data in the above for training using the same 
 training <- iris[intraininglogical,]
 View(training)
-# now i want 25% testing separate data set 
+# now i want 25% testing separate data set,If we give - sign it will collect all the remaining values 
 testing <- iris[-intraininglogical,]
 View(testing)
 # Build my model
