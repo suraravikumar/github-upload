@@ -1,0 +1,43 @@
+# We are comparing our prediction data on our test data set with species column in actual data set
+data("iris")
+View(iris)
+install.packages("C50")
+library(C50)
+install.packages("caret")
+library(caret)
+# To create data we should install caret package 
+# Data partion for model building and testing
+# Creating data partision by spliting data by 75% (p) for training data set and 25% will be testing data set
+# List =F means i want to creat it in matrix format,"If we give list=T it will not work".
+intraininglogical <- createDataPartition(iris$Species,p=.75,list =F)
+# iam going to create data set(75:25) for (traing:testing data set)
+# As iam created my 75% data in the above for training using the same 
+training <- iris[intraininglogical,]
+View(training)
+# now i want 25% testing separate data set 
+testing <- iris[-intraininglogical,]
+View(testing)
+# Build my model
+# my model is c5.5 and dependent variable is species
+# Iam going to regress it with all independent variables 
+# iam going to build my model by using taining data so data=training
+# Bagging and boosting technics trails = 1000
+
+model <- C5.0(training$Species~.,data = training,trails = 1000)
+?C5.0
+# Generating the model summary
+testing[,-5]
+summary(model)
+# now i need to predict my values by using my model and predict on my testing data set
+# give me all rows except my last column
+pred <- predict.C5.0(model,testing[,-5])
+pred
+# Now iam going to draw a table to compair actual values and predicted values
+a <- table(testing$Species,pred)
+View(a)
+# if we want to calculate accuracy
+sum(diag(a)/sum(a))
+# To see the decision tree
+plot(model)
+# Till here it we be covered how to create decision tree
+# Another concept called Bagging
