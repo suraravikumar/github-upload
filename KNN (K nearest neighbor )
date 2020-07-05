@@ -1,0 +1,118 @@
+# Import data set in normal way 
+View(wbcd)
+# My first column is id number which no where useful to my analysis so iam removing 
+wbcd <- wbcd[-1]
+View(wbcd)
+# Now i want to know how many catagories of data present in diagnosis column
+table(wbcd$diagnosis)
+# to confirm the data type either it could be numeric or something else 
+str(wbcd)
+
+# In diagnosis column it is displeying just B $ M now i want to replace those B with "Benign" M with "Malignant" 
+
+wbcd$diagnosis <- factor(wbcd$diagnosis, levels = c("B", "M"),
+                         labels = c("Benign", "Malignant"))
+View(wbcd)
+str(wbcd)
+
+# Nowi want to now whith % of Benign,Malignant
+# take percentage with only 1 decimal values 
+round(prop.table(table(wbcd$diagnosis))*100, digits = 1)
+
+# I required Summary only for radius_mean", "area_mean", "smoothness_mean
+# because iam going  to normalize there indipendent variables 
+summary(wbcd[c("radius_mean", "area_mean", "smoothness_mean")])
+
+# my fetures are all of them are different easuring unites so i should normalize 
+# I cannot comapre these measuring units aginest each other iam going to make it dimension free like scaling function 
+# create normalization function
+normalize <- function(x){
+  return((x-min(x))/max(x)-min(x))
+}
+
+# test normalization function - result should be identical
+#normalize(c(0.01, 0.02, 0.03, 0.04, 0.05))
+#normalize(c(10, 20, 30, 40, 50))
+
+# normalize the wbcd data
+wbcd_n <- as.data.frame(lapply(wbcd[2:31], normalize))
+View(wbcd_n)
+# Note when you do scaling function values will be lying on "-3 to +3"
+# Note when you do Normalization function values will be lying on "0 to 1"
+
+# now i want to confirm worked or not 
+summary(wbcd_n$area_mean)
+
+# create training and test data
+wbcd_train <- wbcd_n[1:469, ]
+wbcd_test <- wbcd_n[470:569, ]
+
+# create labels for training and test data
+
+wbcd_train_labels <- wbcd[1:469, 1]
+wbcd_train_labels <- wbcd_train_labels[["diagnosis"]] 
+
+wbcd_test_labels <- wbcd[470:569, 1]
+wbcd_test_labels <- wbcd_test_labels[["diagnosis"]]
+
+# load the "class" library
+install.packages("class")
+library(class)
+?knn
+# Now iam going to use KNN function
+# Iam starting with K = 1
+wbcd_test_pred <- knn(train = wbcd_train, test = wbcd_test,
+                      cl = wbcd_train_labels, k=1)
+wbcd_test_pred
+
+# now we are going to check the accuracy
+# load the "gmodels" library
+install.packages("gmodels")
+library(gmodels)
+# I want to use Cross table function so iam installing this package 
+
+# Create the cross tabulation of predicted vs. actual
+CrossTable(x = wbcd_test_labels, y = wbcd_test_pred,
+           prop.chisq=FALSE)
+
+# Now to improve my accuracy so i will try with scaling function insted of customization whsich used previously
+# use the scale() function to z-score standardize a data frame
+wbcd_z <- as.data.frame(scale(wbcd[-1]))
+View(wbcd_z)
+
+# confirm that the transformation was applied correctly
+summary(wbcd_z$area_mean)
+# so i have normalized my data so now i should split data into training and testing
+# create training and test datasets
+wbcd_train <- wbcd_z[1:469, ]
+wbcd_test <- wbcd_z[470:569, ]
+
+# iam going to apply KNN model
+# re-classify test cases
+wbcd_test_pred <- knn(train = wbcd_train, test = wbcd_test,
+                      cl = wbcd_train_labels, k=1)
+
+# Create the cross tabulation of predicted vs. actual
+CrossTable(x = wbcd_test_labels, y = wbcd_test_pred,
+           prop.chisq=FALSE)
+
+wbcd_test_pred <- knn(train = wbcd_train, test = wbcd_test, cl = wbcd_train_labels, k=1)
+CrossTable(x = wbcd_test_labels, y = wbcd_test_pred, prop.chisq=FALSE)
+
+wbcd_test_pred <- knn(train = wbcd_train, test = wbcd_test, cl = wbcd_train_labels, k=5)
+CrossTable(x = wbcd_test_labels, y = wbcd_test_pred, prop.chisq=FALSE)
+
+wbcd_test_pred <- knn(train = wbcd_train, test = wbcd_test, cl = wbcd_train_labels, k=11)
+CrossTable(x = wbcd_test_labels, y = wbcd_test_pred, prop.chisq=FALSE)
+
+wbcd_test_pred <- knn(train = wbcd_train, test = wbcd_test, cl = wbcd_train_labels, k=15)
+CrossTable(x = wbcd_test_labels, y = wbcd_test_pred, prop.chisq=FALSE)
+
+wbcd_test_pred <- knn(train = wbcd_train, test = wbcd_test, cl = wbcd_train_labels, k=21)
+CrossTable(x = wbcd_test_labels, y = wbcd_test_pred, prop.chisq=FALSE)
+
+wbcd_test_pred <- knn(train = wbcd_train, test = wbcd_test, cl = wbcd_train_labels, k=27)
+CrossTable(x = wbcd_test_labels, y = wbcd_test_pred, prop.chisq=FALSE)
+
+
+# until achieving the desired accuracy value we should try different K values 
