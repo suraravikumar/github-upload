@@ -1,0 +1,5 @@
+# In diagnosis column it is displeying just B $ M now i want to replace those B with "Benign" M with "Malignant" 
+# Make sure c(c stands for column) should be in lower case 
+wbcd$diagnosis <- factor(wbcd$diagnosis, levels = c("B", "M"),
+                         labels = c("Benign", "Malignant"))
+View(wbcd)
