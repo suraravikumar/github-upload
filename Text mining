@@ -1,0 +1,37 @@
+library(readr)
+require(graphics)
+text <- readLines("modi.txt")
+text
+# for using corpus function we should install tm package, if you aleady installed, you can use that package by selecting from your installed list
+corpus <- Corpus(VectorSource(text))
+# clean up the corpus using tm_map()
+# and iam going to converty everything into lower case
+corpus_clean <- tm_map(corpus, (tolower))
+inspect(corpus_clean)
+# iam going to remove numbers
+corpus_clean <- tm_map(corpus_clean, removeNumbers)
+stopwords("english")
+# Iam going to remove stop words as well
+corpus_clean <- tm_map(corpus_clean, removeWords, stopwords())
+inspect(corpus_clean)
+# remove punctuations & any blank spaces or white spaces
+corpus_clean <- tm_map(corpus_clean, removePunctuation)
+corpus_clean <- tm_map(corpus_clean, stripWhitespace)
+inspect(corpus_clean)
+
+# create a document-term sparse matrix
+dtm <- TermDocumentMatrix(corpus_clean,
+                          control = list(minWordLength=c(1,Inf)))
+findFreqTerms(dtm, lowfreq = 2)
+#Barplot
+termFrequency <- rowSums(as.matrix(dtm))
+termFrequency <- subset(termFrequency, termFrequency>=10)
+library(ggplot2)
+# bargraph will display words which are used more than 10 times
+barplot(termFrequency,las=2, col = rainbow(20))
+install.packages("wordcloud")
+library(wordcloud)
+m <- as.matrix(dtm)
+wordFreq <- sort(rowSums(m), decreasing=TRUE)
+wordcloud(words=names(wordFreq), freq=wordFreq, min.freq = 20, random.order = F, col=gray.colors(1))
+wordcloud(words=names(wordFreq), freq=wordFreq, min.freq = 20, random.order = F, colors=rainbow(20))
