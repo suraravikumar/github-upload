@@ -1,0 +1,37 @@
+# Read text file
+library(tm)
+tweets <- readLines("Tweets.txt")
+tweets
+# Build corpus
+corpus <- Corpus(VectorSource(tweets))
+
+# Create term document matrix
+tdm <- TermDocumentMatrix(corpus, 
+                          control = list(minWordLength=c(1,Inf)))
+tdm
+# Sparsity means emptyness so i should bring down this sparsity or remove blank spaces 
+t <- removeSparseTerms(tdm, sparse=0.98)
+t
+m <- as.matrix(t)
+
+# Plot frequent terms
+freq <- rowSums(m)
+freq <- subset(freq, freq>=50)
+barplot(freq, las=2, col = rainbow(25))
+# now iam going to calculate the distance and scale my data 
+# Hierarchical word/tweet clustering using dendrogram 
+distance <- dist(scale(m))
+print(distance, digits = 2)
+# either we can go for complete instead of single 
+hc <- hclust(distance, method = "complete")
+plot(hc, hang=-1)
+# i required 12 clusters so iam going my data into this 12 clusters 
+# Randomly i selected 12 clusters we can use Elbow method from k means clustering to finalize the exact number of clusters 
+rect.hclust(hc, k=12)
+
+# Nonhierarchical k-means clustering of words/tweets
+m1 <- t(m)
+set.seed(222)
+k <- 3
+kc <- kmeans(m1, k)
+kc
