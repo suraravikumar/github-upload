@@ -1,0 +1,4 @@
+For Working directory 
+getwd()
+For manual selection of Excel file
+mydata <- read_xlsx(file.choose(),1)
